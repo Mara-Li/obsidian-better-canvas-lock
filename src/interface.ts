@@ -1,6 +1,6 @@
 export interface CameraLockCanvasSettings {
-	mySetting: string;
+	lockedCanvas: string[];
 }
 export const DEFAULT_SETTINGS: CameraLockCanvasSettings = {
-	mySetting: "default",
+	lockedCanvas: [],
 };
