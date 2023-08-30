@@ -1,5 +1,9 @@
 import { ItemView, Plugin, WorkspaceLeaf } from "obsidian";
 import { around } from "monkey-around";
+import { CameraLockCanvasSettings, DEFAULT_SETTINGS } from "./interface";
+import { CameraLockCanvasSettingsTab } from "./settings";
+import i18next from "i18next";
+import { resources, translationLanguage } from "./i18n/i18next";
 
 export default class CameraLockCanvas extends Plugin {
 	//eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -7,27 +11,64 @@ export default class CameraLockCanvas extends Plugin {
 	//eslint-disable-next-line @typescript-eslint/no-explicit-any
 	originalFunction: Record<string, any> = {};
 	saved: boolean;
+	settings: CameraLockCanvasSettings;
+
+
 
 	removeHandle(leaf: WorkspaceLeaf) {
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
-		canvas.handleSelectionDrag = () => {return;};
-		canvas.handleDragToSelect = () => {return;};
+		const reset = () => {return;};
+		if (this.settings.select) {
+			canvas.handleSelectionDrag = reset;
+			canvas.handleDragToSelect = reset;
+		}
+		if (this.settings.zoom) {
+			canvas.zoomBy = reset;
+		}
+		if (this.settings.createFile) {
+			canvas.createTextNode = reset;
+			canvas.createFileNode = reset;
+			canvas.createFileNodes = reset;
+			canvas.dragTempNode = reset;
+		}
 	}
 
 	restoreHandle(leaf: WorkspaceLeaf) {
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
-		canvas.handleSelectionDrag = this.originalFunction.handleSelectionDrag;
-		canvas.handleDragToSelect = this.originalFunction.handleDragToSelect;
+		if (this.settings.select) {
+			canvas.handleSelectionDrag = this.originalFunction.handleSelectionDrag;
+			canvas.handleDragToSelect = this.originalFunction.handleDragToSelect;
+		}
+		if (this.settings.zoom) {
+			canvas.zoomBy = this.originalFunction.zoomBy;
+		}
+		if (this.settings.createFile) {
+			canvas.createFileNode = this.originalFunction.createFileNode;
+			canvas.createTextNode = this.originalFunction.createTextNode;
+			canvas.createFileNodes = this.originalFunction.createFileNodes;
+			canvas.dragTempNode = this.originalFunction.dragTempNode;
+		}
 	}
 
 	saveHandle(leaf: WorkspaceLeaf) {
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
 		if (!this.saved) {
-			this.originalFunction.handleSelectionDrag = canvas.handleSelectionDrag;
-			this.originalFunction.handleDragToSelect = canvas.handleDragToSelect;
+			if (this.settings.select) {
+				this.originalFunction.handleSelectionDrag = canvas.handleSelectionDrag;
+				this.originalFunction.handleDragToSelect = canvas.handleDragToSelect;
+			}
+			if (this.settings.zoom) {
+				this.originalFunction.zoomBy = canvas.zoomBy;
+			}
+			if (this.settings.createFile) {
+				this.originalFunction.createFileNode = canvas.createFileNode;
+				this.originalFunction.createTextNode = canvas.createTextNode;
+				this.originalFunction.createFileNodes = canvas.createFileNodes;
+				this.originalFunction.dragTempNode = canvas.dragTempNode;
+			}
 			this.saved = true;
 		}
 
@@ -36,7 +77,6 @@ export default class CameraLockCanvas extends Plugin {
 	removeCamera(leaf: WorkspaceLeaf) {
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
-		console.log(canvas);
 		try {
 			return around(canvas, {
 				setReadonly: (oldMethod) => {
@@ -66,6 +106,17 @@ export default class CameraLockCanvas extends Plugin {
 		console.log(
 			`CameraLockCanvas v.${this.manifest.version} loaded.`
 		);
+
+		i18next.init({
+			lng: translationLanguage,
+			fallbackLng: "en",
+			resources,
+			returnNull: false,
+		});
+
+
+		await this.loadSettings();
+		this.addSettingTab(new CameraLockCanvasSettingsTab(this.app, this));
 		
 		this.registerEvent(this.app.workspace.on("file-open", (file) => {
 			if (!file) {
@@ -105,6 +156,12 @@ export default class CameraLockCanvas extends Plugin {
 		}
 		this.active_monkeys = {};
 	}
+	async loadSettings() {
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+	}
 
+	async saveSettings() {
+		await this.saveData(this.settings);
+	}
 	
 }

@@ -1,1 +1,8 @@
-{}
+{
+  "settings": {
+    "drag": "Disable file creation on drag",
+    "select": "Disable multiple selection",
+    "warning": "You need to reload obsidian for the changes to take effect.",
+    "zoom": "Disable zoom"
+  }
+}

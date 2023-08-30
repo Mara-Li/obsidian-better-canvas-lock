@@ -1,1 +1,8 @@
-{}
+{
+  "settings": {
+    "drag": "Désactiver la création de fichiers par glisser-déposer",
+    "select": "Désactiver la sélection multiple",
+    "warning": "Vous devez recharger Obsidian pour que les modifications soient prises en compte.",
+    "zoom": "Désactiver le zoom"
+  }
+}

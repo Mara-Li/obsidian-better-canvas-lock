@@ -1,6 +1,10 @@
 export interface CameraLockCanvasSettings {
-	lockedCanvas: string[];
+	zoom: boolean;
+	createFile: boolean;
+	select: boolean;
 }
 export const DEFAULT_SETTINGS: CameraLockCanvasSettings = {
-	lockedCanvas: [],
+	zoom: true,
+	createFile: true,
+	select: true,
 };

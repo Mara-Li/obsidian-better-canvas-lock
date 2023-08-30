@@ -8,21 +8,41 @@ export class CameraLockCanvasSettingsTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 	display(): void {
-		let { containerEl } = this;
+		const { containerEl } = this;
 		containerEl.empty();
-		containerEl.createEl("h2", { text: "Settings for my awesome plugin." });
+
+		containerEl.createEl("p", { text: i18next.t("settings.warning"), cls: "warning"});
+
 		new Setting(containerEl)
-			.setName("Setting #1")
-			.setDesc("It's a secret")
-			.addText((text) =>
-				text
-					.setPlaceholder("Enter your secret")
-					.setValue("")
+			.setName(i18next.t("settings.zoom"))
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.zoom)
 					.onChange(async (value) => {
-						console.log("Secret: " + value);
-						this.plugin.settings.mySetting = value;
+						this.plugin.settings.zoom = value;
 						await this.plugin.saveSettings();
 					})
 			);
+		new Setting(containerEl)
+			.setName(i18next.t("settings.drag"))
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.createFile)
+					.onChange(async (value) => {
+						this.plugin.settings.createFile = value;
+						await this.plugin.saveSettings();
+					})
+			);
+		new Setting(containerEl)
+			.setName(i18next.t("settings.select"))
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.select)
+					.onChange(async (value) => {
+						this.plugin.settings.select = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
 	}
 }
