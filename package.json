@@ -33,6 +33,7 @@
 		"eslint-plugin-jsonc": "^2.9.0",
 		"eslint-plugin-node": "^11.1.0",
 		"eslint-plugin-promise": "^6.1.1",
+		"monkey-around": "^2.3.0",
 		"obsidian": "latest",
 		"obsidian-plugin-cli": "latest",
 		"typescript": "^5.2.2"
