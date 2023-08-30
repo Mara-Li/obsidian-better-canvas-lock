@@ -1,0 +1,14 @@
+node_modules
+.env
+*-error.log
+package-lock.json
+yarn.lock
+.npmrc
+.env.json
+dist/**
+main.js
+.idea
+.vscode
+data.json
+styles.css
+!src/styles.css

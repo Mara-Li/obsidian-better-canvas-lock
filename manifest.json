@@ -1,0 +1,11 @@
+{
+	"id": "camera-lock-canvas",
+	"name": "Camera Lock Canvas",
+	"description": "Lock the camera view in canvas ",
+	"author": "Mara-Li",
+	"authorUrl": "https://www.github.com/lisandra-dev",
+	"fundingUrl": "https://ko-fi.com/lisandra_dev",
+	"isDesktopOnly": false,
+	"minAppVersion": "0.16.0",
+	"version": "0.0.1"
+}
