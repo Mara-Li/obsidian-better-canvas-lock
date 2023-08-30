@@ -8,7 +8,8 @@
 		"skipLibCheck": true,
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
-		"forceConsistentCasingInFileNames": true
+		"forceConsistentCasingInFileNames": true,
+		"strictNullChecks": true,
 	},
 	"include": ["src/**/*.ts", "types.d.ts"]
 }
