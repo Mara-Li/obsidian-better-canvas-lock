@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const c = require("ansi-colors");
 const { execSync } = require("child_process");
+const manifest = require("./manifest.json");
 c.theme({
 	danger: c.red,
 	dark: c.dim.gray,
@@ -31,7 +32,7 @@ if (vaultDev.trim().length > 0) {
 		vaultDev,
 		".obsidian",
 		"plugins",
-		"camera-lock-canvas",
+		manifest.id,
 		".hotreload"
 	);
 	if (!fs.existsSync(pluginDir)) {
@@ -45,12 +46,12 @@ if (vaultDev.trim().length > 0) {
 				console.error(err);
 			}
 		});
-		setTimeout(function () {}, 1000);
+		setTimeout(() => {return;}, 1000);
 		console.log(`✔️ ${c.success(".hotreload file created.")}`);
 		console.log();
 	}
 }
-const styleSheet = `--with-stylesheet src/styles.css`;
+const styleSheet = "--with-stylesheet src/styles.css";
 const command = `obsidian-plugin dev ${styleSheet} src/main.ts ${cmd}`;
 console.log(
 	c.info.italic(
