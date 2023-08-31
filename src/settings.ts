@@ -1,9 +1,9 @@
 import { PluginSettingTab, App, Setting } from "obsidian";
-import CameraLockCanvas from "./main";
+import BetterLock from "./main";
 import i18next from "i18next";
-export class CameraLockCanvasSettingsTab extends PluginSettingTab {
-	plugin: CameraLockCanvas;
-	constructor(app: App, plugin: CameraLockCanvas) {
+export class BetterLockSettingsTab extends PluginSettingTab {
+	plugin: BetterLock;
+	constructor(app: App, plugin: BetterLock) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}

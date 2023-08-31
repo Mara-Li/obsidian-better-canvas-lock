@@ -1,4 +1,4 @@
-# Camera Lock Canvas
+# Better canvas lock
 
 Experimental plugin for Obsidian, that lock the "view" of canvas. You can disable:
 - Zoom
@@ -6,6 +6,8 @@ Experimental plugin for Obsidian, that lock the "view" of canvas. You can disabl
 - Drag and drop of canvas
 
 For the moment, scrolling is not disabled, as I don't found how to do that. 
+
+It will monkey-patch the lock function using `monkey-around`, so you just need to enable the plugin to make it work.
 
 ## ⚙️ Usage
 

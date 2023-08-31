@@ -1,20 +1,18 @@
 import { ItemView, Plugin, WorkspaceLeaf } from "obsidian";
 import { around } from "monkey-around";
-import { CameraLockCanvasSettings, DEFAULT_SETTINGS } from "./interface";
-import { CameraLockCanvasSettingsTab } from "./settings";
+import { BetterLockSettings, DEFAULT_SETTINGS } from "./interface";
+import { BetterLockSettingsTab } from "./settings";
 import i18next from "i18next";
 import { resources, translationLanguage } from "./i18n/i18next";
 
 
-export default class CameraLockCanvas extends Plugin {
+export default class BetterLock extends Plugin {
 	//eslint-disable-next-line @typescript-eslint/no-explicit-any
 	active_monkeys: Record<string, any> = {};
 	//eslint-disable-next-line @typescript-eslint/no-explicit-any
 	originalFunction: Record<string, any> = {};
 	saved: boolean;
-	settings: CameraLockCanvasSettings;
-
-
+	settings: BetterLockSettings;
 
 	removeHandle(leaf: WorkspaceLeaf) {
 		//@ts-ignore
@@ -119,7 +117,7 @@ export default class CameraLockCanvas extends Plugin {
 
 
 		await this.loadSettings();
-		this.addSettingTab(new CameraLockCanvasSettingsTab(this.app, this));
+		this.addSettingTab(new BetterLockSettingsTab(this.app, this));
 		
 		this.registerEvent(this.app.workspace.on("file-open", async (file) => {
 			if (!file) {

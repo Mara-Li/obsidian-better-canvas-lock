@@ -1,6 +1,6 @@
 {
-	"id": "camera-lock-canvas",
-	"name": "Camera Lock Canvas",
+	"id": "better-canvas-lock",
+	"name": "Better Canvas Lock",
 	"description": "Lock the camera view in canvas ",
 	"author": "Mara-Li",
 	"authorUrl": "https://www.github.com/lisandra-dev",
