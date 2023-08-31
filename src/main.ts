@@ -31,6 +31,7 @@ export default class BetterLock extends Plugin {
 			canvas.createFileNodes = reset;
 			canvas.dragTempNode = reset;
 		}
+		canvas.isDragging = true;
 	}
 
 	restoreOriginalFunction(leaf: WorkspaceLeaf) {
@@ -49,6 +50,7 @@ export default class BetterLock extends Plugin {
 			canvas.createFileNodes = this.originalFunction.createFileNodes;
 			canvas.dragTempNode = this.originalFunction.dragTempNode;
 		}
+		canvas.isDragging = false;
 	}
 
 	saveOriginalFunction(leaf: WorkspaceLeaf) {

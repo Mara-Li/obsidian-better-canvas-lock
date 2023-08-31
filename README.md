@@ -4,8 +4,7 @@ Experimental plugin for Obsidian, that lock the "view" of canvas. You can disabl
 - Zoom
 - Selection of canvas 
 - Drag and drop of canvas
-
-For the moment, scrolling is not disabled, as I don't found how to do that. 
+- Scroll
 
 It will monkey-patch the lock function using `monkey-around`, so you just need to enable the plugin to make it work.
 
