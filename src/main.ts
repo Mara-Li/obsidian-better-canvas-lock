@@ -1,5 +1,5 @@
 import { ItemView, Plugin, WorkspaceLeaf } from "obsidian";
-import { around, dedupe } from "monkey-around";
+import { around } from "monkey-around";
 import { BetterLockSettings, DEFAULT_SETTINGS } from "./interface";
 import { BetterLockSettingsTab } from "./settings";
 import i18next from "i18next";
@@ -91,10 +91,10 @@ export default class BetterLock extends Plugin {
 		try {
 			return around(canvas, {
 				setReadonly: (oldMethod) => {
-					return dedupe("canvas-lock", oldMethod, function(readonly: boolean) {
+					return (read_only: boolean) => {
 						try {
-							oldMethod?.apply(canvas, [readonly]);
-							if (readonly) {
+							oldMethod?.apply(canvas, [read_only]);
+							if (read_only) {
 								console.log("Camera locked");
 								this.saveOriginalFunction(leaf);
 								this.removeOriginalFunction(leaf);
@@ -102,11 +102,10 @@ export default class BetterLock extends Plugin {
 								console.log("Camera unlocked");
 								this.restoreOriginalFunction(leaf);
 							}
-							return readonly;
 						} catch (e) {
 							//ignore
 						}
-					});
+					};
 				}
 			});
 		} catch (e) {
