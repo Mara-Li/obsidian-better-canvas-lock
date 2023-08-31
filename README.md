@@ -12,7 +12,7 @@ For the moment, scrolling is not disabled, as I don't found how to do that.
 ## 📥 Installation
 
 - [ ] From Obsidian's community plugins
-- [x] Using BRAT with `https://github.com//camera-lock-canvas`
+- [x] Using BRAT with `https://github.com/lisandra-dev/camera-lock-canvas`
 - [x] From the release page:
 - Download the latest release
 - Unzip `camera-lock-canvas.zip` in `.obsidian/plugins/` path
