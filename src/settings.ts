@@ -53,5 +53,15 @@ export class BetterLockSettingsTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					})
 			);
+		new Setting(containerEl)
+			.setName(i18next.t("settings.logsDev"))
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.logs)
+					.onChange(async (value) => {
+						this.plugin.settings.logs = value;
+						await this.plugin.saveSettings();
+					})
+			);
 	}
 }

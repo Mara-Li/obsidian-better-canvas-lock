@@ -14,6 +14,16 @@ export default class BetterLock extends Plugin {
 	saved: boolean;
 	settings: BetterLockSettings;
 
+	logs(error: undefined | boolean, ...message: unknown[]) {
+		if (this.settings.logs) {
+			if (error) {
+				console.error(message);
+			} else {
+				console.log(message);
+			}
+		}
+	}
+
 	removeOriginalFunction(leaf: WorkspaceLeaf) {
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
@@ -97,21 +107,21 @@ export default class BetterLock extends Plugin {
 						try {
 							oldMethod?.apply(canvas, [read_only]);
 							if (read_only) {
-								console.log("Camera locked");
+								this.logs(undefined, "Camera locked");
 								this.saveOriginalFunction(leaf);
 								this.removeOriginalFunction(leaf);
 							} else {
-								console.log("Camera unlocked");
+								this.logs(undefined, "Camera unlocked");
 								this.restoreOriginalFunction(leaf);
 							}
 						} catch (e) {
-							//ignore
+							this.logs(true, e);
 						}
 					};
 				}
 			});
 		} catch (e) {
-			console.log(e);
+			this.logs(true, e);
 		}
 	}
 
@@ -170,6 +180,7 @@ export default class BetterLock extends Plugin {
 		this.active_monkeys = {};
 		this.originalFunction = {};
 		this.saved = false;
+		this.logs(undefined, "Internal data cleaned");
 	}
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());

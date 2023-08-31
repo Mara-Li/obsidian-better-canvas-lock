@@ -1,6 +1,7 @@
 {
   "settings": {
     "drag": "Désactiver la création de fichiers par glisser-déposer",
+    "logsDev": "Affiche les logs de développeurs dans la console",
     "scroll": "Désactiver le scroll",
     "select": "Désactiver la sélection multiple",
     "warning": "Vous devez recharger Obsidian pour que les modifications soient prises en compte.",

@@ -1,6 +1,7 @@
 {
   "settings": {
     "drag": "Disable file creation on drag",
+    "logsDev": "Displays developer logs in the console",
     "scroll": "Disable scrolling",
     "select": "Disable multiple selection",
     "warning": "You need to reload obsidian for the changes to take effect.",
