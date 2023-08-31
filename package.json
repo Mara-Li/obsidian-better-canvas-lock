@@ -10,7 +10,7 @@
 		"lint:fix": "eslint --ext .ts,.js,.json src --fix",
 		"lint": "eslint --ext .ts src",
 		"bump": "node commit-and-tag-version.js",
-		"postbump" : "git push --follow-tags upstream master",
+		"postbump" : "git push --follow-tags origin master",
 		"preexport": "pnpm run build",
 		"export": "node export.js",
 		"predeploy": "pnpm run bump",
