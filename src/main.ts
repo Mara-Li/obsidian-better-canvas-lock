@@ -5,6 +5,7 @@ import { CameraLockCanvasSettingsTab } from "./settings";
 import i18next from "i18next";
 import { resources, translationLanguage } from "./i18n/i18next";
 
+
 export default class CameraLockCanvas extends Plugin {
 	//eslint-disable-next-line @typescript-eslint/no-explicit-any
 	active_monkeys: Record<string, any> = {};
@@ -52,10 +53,12 @@ export default class CameraLockCanvas extends Plugin {
 		}
 	}
 
-	saveHandle(leaf: WorkspaceLeaf) {
+	async saveHandle(leaf: WorkspaceLeaf) {
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
-		if (!this.saved) {
+		const isAlreadyReturn = Object.values(this.originalFunction).some((value) => value.toString().replaceAll(" ", "").replaceAll("\n", "") === "()=>{return;}");
+		if (!this.saved && !isAlreadyReturn) {
+			console.log("Saving original function");
 			if (this.settings.select) {
 				this.originalFunction.handleSelectionDrag = canvas.handleSelectionDrag;
 				this.originalFunction.handleDragToSelect = canvas.handleDragToSelect;
@@ -80,12 +83,12 @@ export default class CameraLockCanvas extends Plugin {
 		try {
 			return around(canvas, {
 				setReadonly: (oldMethod) => {
-					return (read_only: boolean) => {
+					return async (read_only: boolean) => {
 						try {
 							oldMethod?.apply(canvas, [read_only]);
 							if (read_only) {
 								console.log("Camera locked");
-								this.saveHandle(leaf);
+								await this.saveHandle(leaf);
 								this.removeHandle(leaf);
 							} else {
 								console.log("Camera unlocked");
@@ -118,7 +121,7 @@ export default class CameraLockCanvas extends Plugin {
 		await this.loadSettings();
 		this.addSettingTab(new CameraLockCanvasSettingsTab(this.app, this));
 		
-		this.registerEvent(this.app.workspace.on("file-open", (file) => {
+		this.registerEvent(this.app.workspace.on("file-open", async (file) => {
 			if (!file) {
 				for (const monkey of Object.values(this.active_monkeys)) {
 					monkey();
@@ -138,7 +141,7 @@ export default class CameraLockCanvas extends Plugin {
 				const canvas = activeView.leaf.view.canvas;
 				this.active_monkeys[id] = this.removeCamera(activeView.leaf);
 				if (canvas.readonly) {
-					this.saveHandle(activeView.leaf);
+					await this.saveHandle(activeView.leaf);
 					this.removeHandle(activeView.leaf);
 				} 
 			}

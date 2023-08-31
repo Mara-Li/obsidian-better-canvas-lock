@@ -1,6 +1,11 @@
 # Camera Lock Canvas
 
-Lock the camera view in canvas
+Experimental plugin for Obsidian, that lock the "view" of canvas. You can disable:
+- Zoom
+- Selection of canvas 
+- Drag and drop of canvas
+
+For the moment, scrolling is not disabled, as I don't found how to do that. 
 
 ## ⚙️ Usage
 
@@ -51,8 +56,9 @@ VAULT_DEV="path/to/your/dev/vault"
 ### 🎼 Languages
 
 - [x] English
-- [ ] French
-      To add a translation:
+- [x] French
+
+To add a translation:
 - Fork the repository
 - Add the translation in the `src/i18n/locales` folder with the name of the language (ex: `fr.json`)
 - Copy the content of the [`en.json`](./src/i18n/locales/en.json) file in the new file
