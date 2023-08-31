@@ -14,7 +14,7 @@ export default class BetterLock extends Plugin {
 	saved: boolean;
 	settings: BetterLockSettings;
 
-	removeHandle(leaf: WorkspaceLeaf) {
+	removeOriginalFunction(leaf: WorkspaceLeaf) {
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
 		const reset = () => {return;};
@@ -33,7 +33,7 @@ export default class BetterLock extends Plugin {
 		}
 	}
 
-	restoreHandle(leaf: WorkspaceLeaf) {
+	restoreOriginalFunction(leaf: WorkspaceLeaf) {
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
 		if (this.settings.select) {
@@ -51,11 +51,21 @@ export default class BetterLock extends Plugin {
 		}
 	}
 
-	async saveHandle(leaf: WorkspaceLeaf) {
+	saveOriginalFunction(leaf: WorkspaceLeaf) {
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
-		const isAlreadyReturn = Object.values(this.originalFunction).some((value) => value.toString().replaceAll(" ", "").replaceAll("\n", "") === "()=>{return;}");
-		if (!this.saved && !isAlreadyReturn) {
+		const canvasMethods = {
+			handleSelectionDrag: canvas.handleSelectionDrag,
+			handleDragToSelect: canvas.handleDragToSelect,
+			zoomBy: canvas.zoomBy,
+			createFileNode: canvas.createFileNode,
+			createTextNode: canvas.createTextNode,
+			createFileNodes: canvas.createFileNodes,
+			dragTempNode: canvas.dragTempNode,
+		};
+		const isAlreadyOverwritten = Object.values(canvasMethods).some((value) => { return value.toString().replaceAll(" ", "").replaceAll("\n", "") === "()=>{return;}"; });
+		
+		if (!this.saved && !isAlreadyOverwritten) {
 			console.log("Saving original function");
 			if (this.settings.select) {
 				this.originalFunction.handleSelectionDrag = canvas.handleSelectionDrag;
@@ -81,16 +91,16 @@ export default class BetterLock extends Plugin {
 		try {
 			return around(canvas, {
 				setReadonly: (oldMethod) => {
-					return async (read_only: boolean) => {
+					return (read_only: boolean) => {
 						try {
 							oldMethod?.apply(canvas, [read_only]);
 							if (read_only) {
 								console.log("Camera locked");
-								await this.saveHandle(leaf);
-								this.removeHandle(leaf);
+								this.saveOriginalFunction(leaf);
+								this.removeOriginalFunction(leaf);
 							} else {
 								console.log("Camera unlocked");
-								this.restoreHandle(leaf);
+								this.restoreOriginalFunction(leaf);
 							}
 						} catch (e) {
 							//ignore
@@ -139,8 +149,8 @@ export default class BetterLock extends Plugin {
 				const canvas = activeView.leaf.view.canvas;
 				this.active_monkeys[id] = this.removeCamera(activeView.leaf);
 				if (canvas.readonly) {
-					await this.saveHandle(activeView.leaf);
-					this.removeHandle(activeView.leaf);
+					this.saveOriginalFunction(activeView.leaf);
+					this.removeOriginalFunction(activeView.leaf);
 				} 
 			}
 		}));
@@ -156,6 +166,8 @@ export default class BetterLock extends Plugin {
 			monkey();
 		}
 		this.active_monkeys = {};
+		this.originalFunction = {};
+		this.saved = false;
 	}
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
