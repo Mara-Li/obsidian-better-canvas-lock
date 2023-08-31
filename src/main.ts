@@ -8,7 +8,7 @@ import { resources, translationLanguage } from "./i18n/i18next";
 
 export default class BetterLock extends Plugin {
 	//eslint-disable-next-line @typescript-eslint/no-explicit-any
-	active_monkeys: Record<string, any> = {};
+	activeMonkeys: Record<string, any> = {};
 	//eslint-disable-next-line @typescript-eslint/no-explicit-any
 	originalFunction: Record<string, any> = {};
 	saved: boolean;
@@ -97,7 +97,7 @@ export default class BetterLock extends Plugin {
 
 	}
 
-	removeCamera(leaf: WorkspaceLeaf) {
+	betterLock(leaf: WorkspaceLeaf) {
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
 		try {
@@ -143,10 +143,10 @@ export default class BetterLock extends Plugin {
 		
 		this.registerEvent(this.app.workspace.on("file-open", async (file) => {
 			if (!file) {
-				for (const monkey of Object.values(this.active_monkeys)) {
+				for (const monkey of Object.values(this.activeMonkeys)) {
 					monkey();
 				}
-				this.active_monkeys = {};
+				this.activeMonkeys = {};
 				return;
 			}
 			if (file.extension !== "canvas") {
@@ -159,7 +159,7 @@ export default class BetterLock extends Plugin {
 				const id = activeView.leaf.id;
 				//@ts-ignore
 				const canvas = activeView.leaf.view.canvas;
-				this.active_monkeys[id] = this.removeCamera(activeView.leaf);
+				this.activeMonkeys[id] = this.betterLock(activeView.leaf);
 				if (canvas.readonly) {
 					this.saveOriginalFunction(activeView.leaf);
 					this.removeOriginalFunction(activeView.leaf);
@@ -174,10 +174,10 @@ export default class BetterLock extends Plugin {
 		console.log(
 			`CameraLockCanvas v.${this.manifest.version} unloaded.`
 		);
-		for (const monkey of Object.values(this.active_monkeys)) {
+		for (const monkey of Object.values(this.activeMonkeys)) {
 			monkey();
 		}
-		this.active_monkeys = {};
+		this.activeMonkeys = {};
 		this.originalFunction = {};
 		this.saved = false;
 		this.logs(undefined, "Internal data cleaned");
