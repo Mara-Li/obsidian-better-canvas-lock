@@ -25,7 +25,7 @@ jobs:
     with:
       PLUGIN_NAME: better-canvas-lock
       STYLE: true
-      BETA: ${{ inputs.beta }}
+      BETA: ${{ inputs.beta || false}}
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   bump-version-and-release:
@@ -35,6 +35,5 @@ jobs:
       PLUGIN_NAME: better-canvas-lock
       STYLE: true
       BETA: ${{ inputs.beta }}
-
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
