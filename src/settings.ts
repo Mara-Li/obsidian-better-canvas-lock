@@ -11,7 +11,7 @@ export class BetterLockSettingsTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		containerEl.createEl("p", { text: i18next.t("settings.warning"), cls: "warning"});
+		containerEl.createEl("p", { text: `⚠️ ${i18next.t("settings.warning")}`, cls: "warning"});
 
 		new Setting(containerEl)
 			.setName(i18next.t("settings.zoom"))

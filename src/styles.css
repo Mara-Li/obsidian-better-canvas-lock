@@ -4,6 +4,8 @@
 
 .warning {
     border-left: 3px solid var(--color-orange);
-    padding-left: 3px;
-    background-color: rgba(var(--color-orange-rgb), 0.1);
+    padding-left: 5px;
+    background-color: rgba(var(--color-orange-rgb), 0.2);
+    border-radius: 3px;
+    color: var(--color-orange);
 }
