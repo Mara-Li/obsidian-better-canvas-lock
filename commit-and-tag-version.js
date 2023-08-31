@@ -3,7 +3,9 @@ const { Command, Option } = require("commander");
 const commitAndTagVersion = require("commit-and-tag-version");
 const dedent = require("dedent");
 const c = require("ansi-colors");
+
 const program = new Command();
+
 c.theme({
 	danger: c.red,
 	dark: c.dim.gray,
@@ -18,6 +20,7 @@ c.theme({
 	underline: c.underline,
 	warning: c.yellow.underline,
 });
+
 program
 	.description("Bump version and create a new tag")
 	.option("-b, --beta", "Pre-release version")
@@ -29,23 +32,26 @@ program
 			"patch",
 		])
 	);
+
 program.parse();
 const opt = program.opts();
+
 const betaMsg = opt.beta ? c.em("- Pre-release\n\t") : "";
 const dryRunMsg = opt.dryRun ? c.em("- Dry run\n\t") : "";
 const releaseAsMsg = opt.releaseAs
 	? c.em(`- Release as ${c.underline(opt.releaseAs)}`)
 	: "";
+
 const msg = dedent(`
 ${c.heading("Options :")}
-${betaMsg}${dryRunMsg}${releaseAsMsg}
+	${betaMsg}${dryRunMsg}${releaseAsMsg}  
 `);
+
 console.log(msg);
 console.log();
+
 if (opt.beta) {
-	console.log(
-		`${c.bold.green(">")} ${c.info.underline("Bumping beta version...")}`
-	);
+	console.log(`${c.bold.green(">")} ${c.info.underline("Bumping beta version...")}`);
 	console.log();
 	const bumpFiles = [
 		{
@@ -80,6 +86,7 @@ if (opt.beta) {
 		: c.info("Release");
 	console.log(`${c.bold.green(">")} ${c.underline(versionBumped)}`);
 	console.log();
+
 	const bumpFiles = [
 		{
 			filename: "manifest-beta.json",
@@ -96,8 +103,10 @@ if (opt.beta) {
 		{
 			filename: "manifest.json",
 			type: "json",
-		},
+		}
 	];
+
+
 	commitAndTagVersion({
 		infile: "CHANGELOG.md",
 		bumpFiles: bumpFiles,
