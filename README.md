@@ -15,10 +15,10 @@ It will monkey-patch the lock function using `monkey-around`, so you just need t
 - [ ] From Obsidian's community plugins
 - [x] Using BRAT with `https://github.com/lisandra-dev/obsidian-better-canvas-lock`
 - [x] From the release page:
-    - Download the latest release
-    - Unzip `better-canvas-lock.zip` in `.obsidian/plugins/` path
-    - In Obsidian settings, reload the plugin
-    - Enable the plugin
+ - Download the latest release
+ - Unzip `better-canvas-lock.zip` in `.obsidian/plugins/` path
+ - In Obsidian settings, reload the plugin
+ - Enable the plugin
 
 ## 🤖 Developing
 
