@@ -24,6 +24,14 @@ export default class BetterLock extends Plugin {
 	}
 
 	removeOriginalFunction(leaf: WorkspaceLeaf) {
+		/**
+		 * Remove only if the function is not already overwritten
+		 */
+		const isAlreadyOverwritten = this.checkCanvasMethods(leaf);
+		if (isAlreadyOverwritten) {
+			this.logs(undefined, "Function already overwritten, skipping");
+			return;
+		}
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
 		const reset = () => {return;};
@@ -44,6 +52,11 @@ export default class BetterLock extends Plugin {
 	}
 
 	restoreOriginalFunction(leaf: WorkspaceLeaf) {
+		const isAlreadyOverwritten = this.checkCanvasMethods(leaf);
+		if (!isAlreadyOverwritten) {
+			this.logs(undefined, "Function not overwritten, no need to restore");
+			return;
+		}
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
 		if (this.settings.select) {
@@ -65,16 +78,7 @@ export default class BetterLock extends Plugin {
 	saveOriginalFunction(leaf: WorkspaceLeaf) {
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
-		const canvasMethods = {
-			handleSelectionDrag: canvas.handleSelectionDrag,
-			handleDragToSelect: canvas.handleDragToSelect,
-			zoomBy: canvas.zoomBy,
-			createFileNode: canvas.createFileNode,
-			createTextNode: canvas.createTextNode,
-			createFileNodes: canvas.createFileNodes,
-			dragTempNode: canvas.dragTempNode,
-		};
-		const isAlreadyOverwritten = Object.values(canvasMethods).some((value) => { return value.toString().replaceAll(" ", "").replaceAll("\n", "") === "()=>{return;}"; });
+		const isAlreadyOverwritten = this.checkCanvasMethods(leaf);
 		
 		if (!isAlreadyOverwritten) {
 			console.log("Saving original function");
@@ -94,6 +98,22 @@ export default class BetterLock extends Plugin {
 		}
 		return;
 	}
+
+	checkCanvasMethods(leaf: WorkspaceLeaf) {
+		//@ts-ignore
+		const canvas = leaf.view.canvas;
+		const canvasMethods = {
+			handleSelectionDrag: canvas.handleSelectionDrag,
+			handleDragToSelect: canvas.handleDragToSelect,
+			zoomBy: canvas.zoomBy,
+			createFileNode: canvas.createFileNode,
+			createTextNode: canvas.createTextNode,
+			createFileNodes: canvas.createFileNodes,
+			dragTempNode: canvas.dragTempNode,
+		};
+		return Object.values(canvasMethods).some((value) => { return value.toString().replaceAll(" ", "").replaceAll("\n", "") === "()=>{return;}"; });
+	}
+
 
 	betterLock(leaf: WorkspaceLeaf) {
 		//@ts-ignore
