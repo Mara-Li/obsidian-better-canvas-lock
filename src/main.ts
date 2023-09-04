@@ -15,12 +15,18 @@ export default class BetterLock extends Plugin {
 
 	logs(error: undefined | boolean, ...message: unknown[]) {
 		if (this.settings.logs) {
+			let callFunction = new Error().stack?.split("\n")[2].trim();
+			callFunction = callFunction?.substring(callFunction.indexOf("at ") + 3, callFunction.lastIndexOf(" ("));
+			callFunction = callFunction?.replace("Object.callback", "");
+			callFunction = callFunction ? callFunction : "main";
+			callFunction = callFunction === "eval" ? "main" : callFunction;
 			if (error) {
-				console.error(message);
+				console.error(`[${this.manifest.name}] [${callFunction}]`, ...message);
 			} else {
-				console.log(message);
+				console.log(`[${this.manifest.name}] [${callFunction}]`, ...message);
 			}
 		}
+		return;
 	}
 
 	removeOriginalFunction(leaf: WorkspaceLeaf) {
@@ -48,11 +54,13 @@ export default class BetterLock extends Plugin {
 			canvas.createFileNodes = reset;
 			canvas.dragTempNode = reset;
 		}
-		canvas.isDragging = true;
+		if (this.settings.scroll)
+			canvas.isDragging = true;
 	}
 
 	restoreOriginalFunction(leaf: WorkspaceLeaf) {
 		const isAlreadyOverwritten = this.checkCanvasMethods(leaf);
+		this.logs(undefined, "Restoring original function");
 		if (!isAlreadyOverwritten) {
 			this.logs(undefined, "Function not overwritten, no need to restore");
 			return;
@@ -72,7 +80,8 @@ export default class BetterLock extends Plugin {
 			canvas.createFileNodes = this.originalFunction.createFileNodes;
 			canvas.dragTempNode = this.originalFunction.dragTempNode;
 		}
-		canvas.isDragging = false;
+		if (this.settings.scroll)
+			canvas.isDragging = false;
 	}
 
 	saveOriginalFunction(leaf: WorkspaceLeaf) {
@@ -81,7 +90,7 @@ export default class BetterLock extends Plugin {
 		const isAlreadyOverwritten = this.checkCanvasMethods(leaf);
 		
 		if (!isAlreadyOverwritten) {
-			console.log("Saving original function");
+			this.logs(undefined, "Saving original function");
 			if (this.settings.select) {
 				this.originalFunction.handleSelectionDrag = canvas.handleSelectionDrag;
 				this.originalFunction.handleDragToSelect = canvas.handleDragToSelect;
@@ -111,7 +120,11 @@ export default class BetterLock extends Plugin {
 			createFileNodes: canvas.createFileNodes,
 			dragTempNode: canvas.dragTempNode,
 		};
-		return Object.values(canvasMethods).some((value) => { return value.toString().replaceAll(" ", "").replaceAll("\n", "") === "()=>{return;}"; });
+		this.logs(undefined, canvasMethods);
+		this.logs(undefined, "Checking if functions are already overwritten");
+		const isAlreadyOverwritten= Object.values(canvasMethods).some((value) => { return value.toString().replaceAll(" ", "").replaceAll("\n", "") === "()=>{return;}"; });
+		this.logs(undefined, "isAlreadyOverwritten", isAlreadyOverwritten);
+		return isAlreadyOverwritten;
 	}
 
 
@@ -159,35 +172,35 @@ export default class BetterLock extends Plugin {
 		await this.loadSettings();
 		this.addSettingTab(new BetterLockSettingsTab(this.app, this));
 		
-		this.registerEvent(this.app.workspace.on("file-open", async (file) => {
-			if (!file) {
+		this.registerEvent(this.app.workspace.on("active-leaf-change", async (leaf) => {
+			if (!leaf) {
+				this.logs(undefined, "No file opened, skipping");
 				for (const monkey of Object.values(this.activeMonkeys)) {
 					monkey();
 				}
 				this.activeMonkeys = {};
 				return;
 			}
-			if (file.extension !== "canvas") {
+			const typeLeaf = leaf.view.getViewType();
+			if (typeLeaf !== "canvas") {
+				this.logs(undefined, "Not a canvas, skipping");
 				return;
 			}
 			//get active leaf
-			const activeView = this.app.workspace.getActiveViewOfType(ItemView);
-			if (activeView && activeView?.getViewType() === "canvas") {
-				//@ts-ignore
-				const id = activeView.leaf.id;
-				//@ts-ignore
-				const canvas = activeView.leaf.view.canvas;
-				this.activeMonkeys[id] = this.betterLock(activeView.leaf);
-				if (canvas.readonly) {
-					this.saveOriginalFunction(activeView.leaf);
-					this.removeOriginalFunction(activeView.leaf);
-				} 
+			//@ts-ignore
+			const id = leaf.id;
+			//@ts-ignore
+			const canvas = leaf.view.canvas;
+			this.activeMonkeys[id] = this.betterLock(leaf);
+			if (canvas.readonly) {
+				this.saveOriginalFunction(leaf);
+				this.removeOriginalFunction(leaf);
 			}
 		}));
 
-		
-		
 	}
+	
+
 	onunload() {
 		console.log(
 			`CameraLockCanvas v.${this.manifest.version} unloaded.`

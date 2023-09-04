@@ -6,9 +6,9 @@ Experimental plugin for Obsidian, that lock the "view" of canvas. You can disabl
 - Drag and drop of canvas
 - Scroll
 
-It will monkey-patch the lock function using `monkey-around`, so you just need to enable the plugin to make it work.
+It will monkey-patch the lock function using `monkey-around`, so you just need to enable the plugin to make it work. Also, canvas are detected on the `active-leaf-change`. 
 
-## ⚙️ Usage
+You can also enable/disable the logs in the console. Beware, because the logs spam the console, and you will see redondant error.
 
 ## 📥 Installation
 
