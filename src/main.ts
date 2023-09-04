@@ -11,7 +11,6 @@ export default class BetterLock extends Plugin {
 	activeMonkeys: Record<string, any> = {};
 	//eslint-disable-next-line @typescript-eslint/no-explicit-any
 	originalFunction: Record<string, any> = {};
-	saved: boolean;
 	settings: BetterLockSettings;
 
 	logs(error: undefined | boolean, ...message: unknown[]) {
@@ -77,7 +76,7 @@ export default class BetterLock extends Plugin {
 		};
 		const isAlreadyOverwritten = Object.values(canvasMethods).some((value) => { return value.toString().replaceAll(" ", "").replaceAll("\n", "") === "()=>{return;}"; });
 		
-		if (!this.saved && !isAlreadyOverwritten) {
+		if (!isAlreadyOverwritten) {
 			console.log("Saving original function");
 			if (this.settings.select) {
 				this.originalFunction.handleSelectionDrag = canvas.handleSelectionDrag;
@@ -92,9 +91,8 @@ export default class BetterLock extends Plugin {
 				this.originalFunction.createFileNodes = canvas.createFileNodes;
 				this.originalFunction.dragTempNode = canvas.dragTempNode;
 			}
-			this.saved = true;
 		}
-
+		return;
 	}
 
 	betterLock(leaf: WorkspaceLeaf) {
@@ -179,7 +177,6 @@ export default class BetterLock extends Plugin {
 		}
 		this.activeMonkeys = {};
 		this.originalFunction = {};
-		this.saved = false;
 		this.logs(undefined, "Internal data cleaned");
 	}
 	async loadSettings() {
