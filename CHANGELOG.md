@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.0.8](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/compare/0.0.7...0.0.8) (2023-09-04)
+
+
+### Bug Fixes
+
+* add some check to prevent unwanted override ([88317d8](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/commit/88317d8b69c8fc740c2f69737b2e0422dcc7da7d))
+* use on-layou-change instead of file-open ([b82f640](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/commit/b82f6402e46f03ae6591889f502bd4d16190ab25))
+
 ## [0.0.7](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/compare/0.0.6...0.0.7) (2023-09-04)
 
 
