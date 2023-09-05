@@ -9,7 +9,6 @@ import { resources, translationLanguage } from "./i18n/i18next";
 export default class BetterLock extends Plugin {
 	//eslint-disable-next-line @typescript-eslint/no-explicit-any
 	activeMonkeys: Record<string, any> = {};
-	//eslint-disable-next-line @typescript-eslint/no-explicit-any
 	settings: BetterLockSettings;
 
 	logs(error: undefined | boolean, ...message: unknown[]) {
