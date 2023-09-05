@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.0.10](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/compare/0.0.9...0.0.10) (2023-09-05)
+
+
+### Bug Fixes
+
+* forgot to check onTouchdown when checking methods ([dd9adc2](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/commit/dd9adc2508a87b8454ca37d79446c83c017d8105))
+
 ## [0.0.9](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/compare/0.0.8...0.0.9) (2023-09-05)
 
 
