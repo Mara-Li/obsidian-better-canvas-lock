@@ -129,6 +129,7 @@ export default class BetterLock extends Plugin {
 			createTextNode: canvas.createTextNode,
 			createFileNodes: canvas.createFileNodes,
 			dragTempNode: canvas.dragTempNode,
+			onTouchdown: canvas.onTouchdown,
 		};
 		const isAlreadyOverwritten= Object.values(canvasMethods).some((value) => { return value.toString().replaceAll(" ", "").replaceAll("\n", "") === "()=>{return;}"; });
 		this.logs(undefined, "Methods are already overwritten ?", isAlreadyOverwritten);
