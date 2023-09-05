@@ -1,4 +1,4 @@
-import { ItemView, Plugin, WorkspaceLeaf } from "obsidian";
+import { Plugin, WorkspaceLeaf } from "obsidian";
 import { around } from "monkey-around";
 import { BetterLockSettings, DEFAULT_SETTINGS } from "./interface";
 import { BetterLockSettingsTab } from "./settings";
@@ -54,13 +54,16 @@ export default class BetterLock extends Plugin {
 			canvas.createFileNodes = reset;
 			canvas.dragTempNode = reset;
 		}
-		if (this.settings.scroll)
+		if (this.settings.scroll){
 			canvas.isDragging = true;
+			canvas.onTouchdown = reset;
+		}
+
+		
 	}
 
 	restoreOriginalFunction(leaf: WorkspaceLeaf) {
 		const isAlreadyOverwritten = this.checkCanvasMethods(leaf);
-		this.logs(undefined, "Restoring original function");
 		if (!isAlreadyOverwritten) {
 			this.logs(undefined, "Function not overwritten, no need to restore");
 			return;
@@ -80,29 +83,36 @@ export default class BetterLock extends Plugin {
 			canvas.createFileNodes = this.originalFunction.createFileNodes;
 			canvas.dragTempNode = this.originalFunction.dragTempNode;
 		}
-		if (this.settings.scroll)
+		if (this.settings.scroll) {
 			canvas.isDragging = false;
+			canvas.onTouchdown = this.originalFunction.onTouchdown;
+		}
 	}
 
 	saveOriginalFunction(leaf: WorkspaceLeaf) {
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
+		
 		const isAlreadyOverwritten = this.checkCanvasMethods(leaf);
+		const prototype = Object.getPrototypeOf(canvas);
 		
 		if (!isAlreadyOverwritten) {
 			this.logs(undefined, "Saving original function");
 			if (this.settings.select) {
-				this.originalFunction.handleSelectionDrag = canvas.handleSelectionDrag;
-				this.originalFunction.handleDragToSelect = canvas.handleDragToSelect;
+				this.originalFunction.handleSelectionDrag = prototype.handleSelectionDrag;
+				this.originalFunction.handleDragToSelect = prototype.handleDragToSelect;
 			}
 			if (this.settings.zoom) {
-				this.originalFunction.zoomBy = canvas.zoomBy;
+				this.originalFunction.zoomBy = prototype.zoomBy;
 			}
 			if (this.settings.createFile) {
-				this.originalFunction.createFileNode = canvas.createFileNode;
-				this.originalFunction.createTextNode = canvas.createTextNode;
-				this.originalFunction.createFileNodes = canvas.createFileNodes;
-				this.originalFunction.dragTempNode = canvas.dragTempNode;
+				this.originalFunction.createFileNode = prototype.createFileNode;
+				this.originalFunction.createTextNode = prototype.createTextNode;
+				this.originalFunction.createFileNodes = prototype.createFileNodes;
+				this.originalFunction.dragTempNode = prototype.dragTempNode;
+			}
+			if (this.settings.scroll) {
+				this.originalFunction.onTouchdown = prototype.onTouchdown;
 			}
 		}
 		return;
@@ -120,10 +130,8 @@ export default class BetterLock extends Plugin {
 			createFileNodes: canvas.createFileNodes,
 			dragTempNode: canvas.dragTempNode,
 		};
-		this.logs(undefined, canvasMethods);
-		this.logs(undefined, "Checking if functions are already overwritten");
 		const isAlreadyOverwritten= Object.values(canvasMethods).some((value) => { return value.toString().replaceAll(" ", "").replaceAll("\n", "") === "()=>{return;}"; });
-		this.logs(undefined, "isAlreadyOverwritten", isAlreadyOverwritten);
+		this.logs(undefined, "Methods are already overwritten ?", isAlreadyOverwritten);
 		return isAlreadyOverwritten;
 	}
 
@@ -197,7 +205,6 @@ export default class BetterLock extends Plugin {
 				this.removeOriginalFunction(leaf);
 			}
 		}));
-
 	}
 	
 
