@@ -10,7 +10,6 @@ export default class BetterLock extends Plugin {
 	//eslint-disable-next-line @typescript-eslint/no-explicit-any
 	activeMonkeys: Record<string, any> = {};
 	//eslint-disable-next-line @typescript-eslint/no-explicit-any
-	originalFunction: Record<string, any> = {};
 	settings: BetterLockSettings;
 
 	logs(error: undefined | boolean, ...message: unknown[]) {
@@ -30,14 +29,6 @@ export default class BetterLock extends Plugin {
 	}
 
 	removeOriginalFunction(leaf: WorkspaceLeaf) {
-		/**
-		 * Remove only if the function is not already overwritten
-		 */
-		const isAlreadyOverwritten = this.checkCanvasMethods(leaf);
-		if (isAlreadyOverwritten) {
-			this.logs(undefined, "Function already overwritten, skipping");
-			return;
-		}
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
 		const reset = () => {return;};
@@ -58,84 +49,31 @@ export default class BetterLock extends Plugin {
 			canvas.isDragging = true;
 			canvas.onTouchdown = reset;
 		}
-
 		
 	}
 
 	restoreOriginalFunction(leaf: WorkspaceLeaf) {
-		const isAlreadyOverwritten = this.checkCanvasMethods(leaf);
-		if (!isAlreadyOverwritten) {
-			this.logs(undefined, "Function not overwritten, no need to restore");
-			return;
-		}
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
+		const prototype = Object.getPrototypeOf(canvas);
 		if (this.settings.select) {
-			canvas.handleSelectionDrag = this.originalFunction.handleSelectionDrag;
-			canvas.handleDragToSelect = this.originalFunction.handleDragToSelect;
+			canvas.handleSelectionDrag = prototype.handleSelectionDrag;
+			canvas.handleDragToSelect = prototype.handleDragToSelect;
 		}
 		if (this.settings.zoom) {
-			canvas.zoomBy = this.originalFunction.zoomBy;
+			canvas.zoomBy = prototype.zoomBy;
 		}
 		if (this.settings.createFile) {
-			canvas.createFileNode = this.originalFunction.createFileNode;
-			canvas.createTextNode = this.originalFunction.createTextNode;
-			canvas.createFileNodes = this.originalFunction.createFileNodes;
-			canvas.dragTempNode = this.originalFunction.dragTempNode;
+			canvas.createFileNode = prototype.createFileNode;
+			canvas.createTextNode = prototype.createTextNode;
+			canvas.createFileNodes = prototype.createFileNodes;
+			canvas.dragTempNode = prototype.dragTempNode;
 		}
 		if (this.settings.scroll) {
 			canvas.isDragging = false;
-			canvas.onTouchdown = this.originalFunction.onTouchdown;
+			canvas.onTouchdown = prototype.onTouchdown;
 		}
 	}
-
-	saveOriginalFunction(leaf: WorkspaceLeaf) {
-		//@ts-ignore
-		const canvas = leaf.view.canvas;
-		
-		const isAlreadyOverwritten = this.checkCanvasMethods(leaf);
-		const prototype = Object.getPrototypeOf(canvas);
-		
-		if (!isAlreadyOverwritten) {
-			this.logs(undefined, "Saving original function");
-			if (this.settings.select) {
-				this.originalFunction.handleSelectionDrag = prototype.handleSelectionDrag;
-				this.originalFunction.handleDragToSelect = prototype.handleDragToSelect;
-			}
-			if (this.settings.zoom) {
-				this.originalFunction.zoomBy = prototype.zoomBy;
-			}
-			if (this.settings.createFile) {
-				this.originalFunction.createFileNode = prototype.createFileNode;
-				this.originalFunction.createTextNode = prototype.createTextNode;
-				this.originalFunction.createFileNodes = prototype.createFileNodes;
-				this.originalFunction.dragTempNode = prototype.dragTempNode;
-			}
-			if (this.settings.scroll) {
-				this.originalFunction.onTouchdown = prototype.onTouchdown;
-			}
-		}
-		return;
-	}
-
-	checkCanvasMethods(leaf: WorkspaceLeaf) {
-		//@ts-ignore
-		const canvas = leaf.view.canvas;
-		const canvasMethods = {
-			handleSelectionDrag: canvas.handleSelectionDrag,
-			handleDragToSelect: canvas.handleDragToSelect,
-			zoomBy: canvas.zoomBy,
-			createFileNode: canvas.createFileNode,
-			createTextNode: canvas.createTextNode,
-			createFileNodes: canvas.createFileNodes,
-			dragTempNode: canvas.dragTempNode,
-			onTouchdown: canvas.onTouchdown,
-		};
-		const isAlreadyOverwritten= Object.values(canvasMethods).some((value) => { return value.toString().replaceAll(" ", "").replaceAll("\n", "") === "()=>{return;}"; });
-		this.logs(undefined, "Methods are already overwritten ?", isAlreadyOverwritten);
-		return isAlreadyOverwritten;
-	}
-
 
 	betterLock(leaf: WorkspaceLeaf) {
 		//@ts-ignore
@@ -148,7 +86,6 @@ export default class BetterLock extends Plugin {
 							oldMethod?.apply(canvas, [read_only]);
 							if (read_only) {
 								this.logs(undefined, "Camera locked");
-								this.saveOriginalFunction(leaf);
 								this.removeOriginalFunction(leaf);
 							} else {
 								this.logs(undefined, "Camera unlocked");
@@ -202,7 +139,6 @@ export default class BetterLock extends Plugin {
 			const canvas = leaf.view.canvas;
 			this.activeMonkeys[id] = this.betterLock(leaf);
 			if (canvas.readonly) {
-				this.saveOriginalFunction(leaf);
 				this.removeOriginalFunction(leaf);
 			}
 		}));
@@ -217,7 +153,6 @@ export default class BetterLock extends Plugin {
 			monkey();
 		}
 		this.activeMonkeys = {};
-		this.originalFunction = {};
 		this.logs(undefined, "Internal data cleaned");
 	}
 	async loadSettings() {
