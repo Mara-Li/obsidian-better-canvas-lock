@@ -10,6 +10,13 @@ It will monkey-patch the lock function using `monkey-around`, so you just need t
 
 You can also enable/disable the logs in the console. Beware, because the logs spam the console, and you will see redondant error.
 
+
+
+
+https://github.com/Lisandra-dev/obsidian-better-canvas-lock/assets/30244939/c5359f72-2234-4959-a094-87c7c51a3372
+
+
+
 ## 📥 Installation
 
 - [ ] From Obsidian's community plugins
