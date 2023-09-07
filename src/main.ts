@@ -17,12 +17,13 @@ export default class BetterLock extends Plugin {
 			callFunction = callFunction?.substring(callFunction.indexOf("at ") + 3, callFunction.lastIndexOf(" ("));
 			callFunction = callFunction?.replace("Object.callback", "");
 			callFunction = callFunction ? callFunction : "main";
-			callFunction = callFunction === "eval" ? "main" : callFunction;
+			callFunction = callFunction.contains("eval") ? "main" : callFunction;
 			if (error) {
-				console.error(`[${this.manifest.name}] [${callFunction}]`, ...message);
+				console.error(`[${this.manifestName()}] [${callFunction}]`, ...message);
 			} else {
-				console.log(`[${this.manifest.name}] [${callFunction}]`, ...message);
+				console.log(`[${this.manifestName()}] [${callFunction}]`, ...message);
 			}
+			return;
 		}
 		return;
 	}
@@ -37,6 +38,7 @@ export default class BetterLock extends Plugin {
 		}
 		if (this.settings.zoom) {
 			canvas.zoomBy = reset;
+			this.disableButton(leaf);
 		}
 		if (this.settings.createFile) {
 			canvas.createTextNode = reset;
@@ -48,7 +50,45 @@ export default class BetterLock extends Plugin {
 			canvas.isDragging = true;
 			canvas.onTouchdown = reset;
 		}
+	}
+
+	disableButton(leaf: WorkspaceLeaf) {
+		const buttonPlus = leaf.view.containerEl.querySelector(".canvas-control-item:has(.lucide-plus)");
+		const buttonMinus = leaf.view.containerEl.querySelector(".canvas-control-item:has(.lucide-minus)");
+		const buttonRotate = leaf.view.containerEl.querySelector(".canvas-control-item:has(.lucide-rotate-cw)");
+		if (buttonPlus) {
+			buttonPlus.ariaDisabled = "true";
+			buttonPlus.classList.add("is-disabled");
+		}
+		if (buttonMinus) {
+			buttonMinus.ariaDisabled = "true";
+			buttonMinus.classList.add("is-disabled");
+		}
+		if (buttonRotate) {
+			buttonRotate.ariaDisabled = "true";
+			buttonRotate.classList.add("is-disabled");
+		}
 		
+		return;
+	}
+
+	enableButton(leaf: WorkspaceLeaf) {
+		const buttonPlus = leaf.view.containerEl.querySelector(".canvas-control-item:has(.lucide-plus)");
+		const buttonMinus = leaf.view.containerEl.querySelector(".canvas-control-item:has(.lucide-minus)");
+		const buttonRotate = leaf.view.containerEl.querySelector(".canvas-control-item:has(.lucide-rotate-cw)");
+		if (buttonPlus) {
+			buttonPlus.ariaDisabled = "false";
+			buttonPlus.classList.remove("is-disabled");
+		}
+		if (buttonMinus) {
+			buttonMinus.ariaDisabled = "false";
+			buttonMinus.classList.remove("is-disabled");
+		}
+		if (buttonRotate) {
+			buttonRotate.ariaDisabled = "false";
+			buttonRotate.classList.remove("is-disabled");
+		}
+		return;
 	}
 
 	restoreOriginalFunction(leaf: WorkspaceLeaf) {
@@ -61,6 +101,7 @@ export default class BetterLock extends Plugin {
 		}
 		if (this.settings.zoom) {
 			canvas.zoomBy = prototype.zoomBy;
+			this.enableButton(leaf);
 		}
 		if (this.settings.createFile) {
 			canvas.createFileNode = prototype.createFileNode;
@@ -84,7 +125,7 @@ export default class BetterLock extends Plugin {
 						try {
 							oldMethod?.apply(canvas, [read_only]);
 							if (read_only) {
-								this.logs(undefined, "Camera locked");
+								//this.logs(undefined, "Camera locked");
 								this.removeOriginalFunction(leaf);
 							} else {
 								this.logs(undefined, "Camera unlocked");
@@ -103,7 +144,7 @@ export default class BetterLock extends Plugin {
 
 	async onload() {
 		console.log(
-			`CameraLockCanvas v.${this.manifest.version} loaded.`
+			`${this.manifestName()} v.${this.manifest.version} loaded.`
 		);
 
 		i18next.init({
@@ -138,6 +179,7 @@ export default class BetterLock extends Plugin {
 			const canvas = leaf.view.canvas;
 			this.activeMonkeys[id] = this.betterLock(leaf);
 			if (canvas.readonly) {
+				this.logs(undefined, "Camera locked");
 				this.removeOriginalFunction(leaf);
 			}
 		}));
@@ -146,7 +188,7 @@ export default class BetterLock extends Plugin {
 
 	onunload() {
 		console.log(
-			`CameraLockCanvas v.${this.manifest.version} unloaded.`
+			`${this.manifestName()} v.${this.manifest.version} unloaded.`
 		);
 		for (const monkey of Object.values(this.activeMonkeys)) {
 			monkey();
@@ -161,5 +203,14 @@ export default class BetterLock extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
+
+	/**
+	 * Display the manifest name without spaces
+	 * @returns string - manifest name without spaces
+	 */
+	manifestName() {
+		return this.manifest.name.replaceAll(/\s+/g, "");
+	}
 	
 }
+
