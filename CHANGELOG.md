@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.0.12](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/compare/0.0.11...0.0.12) (2023-09-07)
+
+
+### Features
+
+* **menu:** disable menu when creating file is set to false ([2fd2f43](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/commit/2fd2f437ac04f6b8537450982f685730e72d82c8))
+
+
+### Bug Fixes
+
+* **scroll:** allow dragging when focusing a canvas-node ([e7651a7](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/commit/e7651a730de7f7534056aff2e623c94665ddbae3))
+
 ## [0.0.11](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/compare/0.0.10...0.0.11) (2023-09-07)
 
 
