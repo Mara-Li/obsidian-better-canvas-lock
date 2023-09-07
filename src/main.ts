@@ -28,30 +28,6 @@ export default class BetterLock extends Plugin {
 		return;
 	}
 
-	removeOriginalFunction(leaf: WorkspaceLeaf) {
-		//@ts-ignore
-		const canvas = leaf.view.canvas;
-		const reset = () => {return;};
-		if (this.settings.select) {
-			canvas.handleSelectionDrag = reset;
-			canvas.handleDragToSelect = reset;
-		}
-		if (this.settings.zoom) {
-			canvas.zoomBy = reset;
-			this.disableButton(leaf);
-		}
-		if (this.settings.createFile) {
-			canvas.createTextNode = reset;
-			canvas.createFileNode = reset;
-			canvas.createFileNodes = reset;
-			canvas.dragTempNode = reset;
-		}
-		if (this.settings.scroll){
-			canvas.isDragging = true;
-			canvas.onTouchdown = reset;
-		}
-	}
-
 	disableButton(leaf: WorkspaceLeaf) {
 		const buttonPlus = leaf.view.containerEl.querySelector(".canvas-control-item:has(.lucide-plus)");
 		const buttonMinus = leaf.view.containerEl.querySelector(".canvas-control-item:has(.lucide-minus)");
@@ -91,7 +67,34 @@ export default class BetterLock extends Plugin {
 		return;
 	}
 
-	restoreOriginalFunction(leaf: WorkspaceLeaf) {
+	disableFunction(leaf: WorkspaceLeaf) {
+		//@ts-ignore
+		const canvas = leaf.view.canvas;
+		this.logs(undefined, canvas);
+		const reset = () => {return;};
+		if (this.settings.select) {
+			canvas.handleSelectionDrag = reset;
+			canvas.handleDragToSelect = reset;
+		}
+		if (this.settings.zoom) {
+			canvas.zoomBy = reset;
+			this.disableButton(leaf);
+		}
+		if (this.settings.createFile) {
+			canvas.createTextNode = reset;
+			canvas.createFileNode = reset;
+			canvas.createFileNodes = reset;
+			canvas.dragTempNode = reset;
+			canvas.cardMenuEl.addClass("is-disabled");
+
+		}
+		if (this.settings.scroll){
+			canvas.onTouchdown = reset;
+			canvas.isDragging = canvas.wrapperEl?.querySelector(".canvas-node.is-focused") && canvas.readonly ? false : true;
+		}
+	}
+
+	enableFunction(leaf: WorkspaceLeaf) {
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
 		const prototype = Object.getPrototypeOf(canvas);
@@ -108,6 +111,7 @@ export default class BetterLock extends Plugin {
 			canvas.createTextNode = prototype.createTextNode;
 			canvas.createFileNodes = prototype.createFileNodes;
 			canvas.dragTempNode = prototype.dragTempNode;
+			canvas.cardMenuEl.removeClass("is-disabled");
 		}
 		if (this.settings.scroll) {
 			canvas.isDragging = false;
@@ -126,10 +130,10 @@ export default class BetterLock extends Plugin {
 							oldMethod?.apply(canvas, [read_only]);
 							if (read_only) {
 								//this.logs(undefined, "Camera locked");
-								this.removeOriginalFunction(leaf);
+								this.disableFunction(leaf);
 							} else {
 								this.logs(undefined, "Camera unlocked");
-								this.restoreOriginalFunction(leaf);
+								this.enableFunction(leaf);
 							}
 						} catch (e) {
 							this.logs(true, e);
@@ -180,7 +184,7 @@ export default class BetterLock extends Plugin {
 			this.activeMonkeys[id] = this.betterLock(leaf);
 			if (canvas.readonly) {
 				this.logs(undefined, "Camera locked");
-				this.removeOriginalFunction(leaf);
+				this.disableFunction(leaf);
 			}
 		}));
 	}
