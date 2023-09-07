@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.0.11](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/compare/0.0.10...0.0.11) (2023-09-07)
+
+
+### Features
+
+* **zoom:** disable button for disabled function ([28a793d](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/commit/28a793dcee7edeb5ff553660f417a79e5110e598))
+
 ## [0.0.10](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/compare/0.0.9...0.0.10) (2023-09-05)
 
 
