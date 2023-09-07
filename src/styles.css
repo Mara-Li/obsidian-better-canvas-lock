@@ -9,3 +9,7 @@
     border-radius: 3px;
     color: var(--color-orange);
 }
+
+.canvas-card-menu.is-disabled {
+    opacity: 0.5;
+}
