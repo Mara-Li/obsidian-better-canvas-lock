@@ -1,6 +1,6 @@
 {
 	"name": "camera-lock-canvas",
-	"version": "0.0.12",
+	"version": "0.0.13",
 	"description": "Lock the camera view in canvas ",
 	"main": "lib/main.js",
 	"license": "GPL-3.0-only",

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.0.13](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/compare/0.0.12...0.0.13) (2023-09-08)
+
+
+### Bug Fixes
+
+* dragging behavior when click on canvas card ([e0c42ec](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/commit/e0c42ec16c7c18d13b6624c832f5f49bbde91d02))
+
 ## [0.0.12](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/compare/0.0.11...0.0.12) (2023-09-07)
 
 
