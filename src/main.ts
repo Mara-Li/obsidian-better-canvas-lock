@@ -1,4 +1,4 @@
-import { Plugin, WorkspaceLeaf } from "obsidian";
+import { Platform, Plugin, WorkspaceLeaf } from "obsidian";
 import { around } from "monkey-around";
 import { BetterLockSettings, DEFAULT_SETTINGS } from "./interface";
 import { BetterLockSettingsTab } from "./settings";
@@ -19,7 +19,10 @@ export default class BetterLock extends Plugin {
 			callFunction = callFunction ? callFunction : "main";
 			callFunction = callFunction.contains("eval") ? "main" : callFunction;
 			if (error) {
-				console.error(`[${this.manifestName()}] [${callFunction}]`, ...message);
+				if (!Platform.isDesktop)
+					console.error(`[${this.manifestName()}] [${callFunction}]`, ...message);
+				else
+					console.log(`[${this.manifestName()}] [${callFunction}]`, ...message);
 			} else {
 				console.log(`[${this.manifestName()}] [${callFunction}]`, ...message);
 			}
@@ -70,7 +73,6 @@ export default class BetterLock extends Plugin {
 	disableFunction(leaf: WorkspaceLeaf) {
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
-		this.logs(undefined, canvas);
 		const reset = () => {return;};
 		if (this.settings.select) {
 			canvas.handleSelectionDrag = reset;
@@ -89,9 +91,13 @@ export default class BetterLock extends Plugin {
 
 		}
 		if (this.settings.scroll){
-			canvas.onTouchdown = reset;
-			canvas.isDragging = canvas.wrapperEl?.querySelector(".canvas-node.is-focused") && canvas.readonly ? false : true;
+			this.logs(undefined, canvas);
+			const isFocused = canvas.wrapperEl?.querySelector(".canvas-node.is-focused");
+			canvas.onTouchdown = isFocused ? Object.getPrototypeOf(canvas).onTouchdown : reset ;
+			canvas.isDragging = isFocused ? false : true;
+			this.logs(undefined, canvas.isDragging);
 		}
+		return;
 	}
 
 	enableFunction(leaf: WorkspaceLeaf) {
@@ -119,9 +125,28 @@ export default class BetterLock extends Plugin {
 		}
 	}
 
+	onClickEvent(leaf: WorkspaceLeaf) {
+		//@ts-ignore
+		const canvas = leaf.view.canvas;
+		canvas.wrapperEl.addEventListener("click", () => {
+			if (canvas.readonly) {
+				this.logs(undefined, "Readonly click");
+				const isFocused = canvas.wrapperEl?.querySelector(".canvas-node.is-focused");
+				canvas.onTouchdown = isFocused ? Object.getPrototypeOf(canvas).onTouchdown : () => {return;};
+				canvas.isDragging = isFocused ? false : true;
+			} else {
+				//restore
+				this.logs(undefined, "Readwrite click, restoring default behavior");
+				canvas.onTouchdown = Object.getPrototypeOf(canvas).onTouchdown;
+				canvas.isDragging = false;
+			}
+		});
+	}
+
 	betterLock(leaf: WorkspaceLeaf) {
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
+		this.onClickEvent(leaf);
 		try {
 			return around(canvas, {
 				setReadonly: (oldMethod) => {
@@ -129,7 +154,7 @@ export default class BetterLock extends Plugin {
 						try {
 							oldMethod?.apply(canvas, [read_only]);
 							if (read_only) {
-								//this.logs(undefined, "Camera locked");
+								this.logs(undefined, "Camera locked");
 								this.disableFunction(leaf);
 							} else {
 								this.logs(undefined, "Camera unlocked");
@@ -141,10 +166,13 @@ export default class BetterLock extends Plugin {
 					};
 				}
 			});
+			
 		} catch (e) {
 			this.logs(true, e);
 		}
 	}
+
+
 
 	async onload() {
 		console.log(
@@ -184,6 +212,7 @@ export default class BetterLock extends Plugin {
 			this.activeMonkeys[id] = this.betterLock(leaf);
 			if (canvas.readonly) {
 				this.logs(undefined, "Camera locked");
+				this.onClickEvent(leaf);
 				this.disableFunction(leaf);
 			}
 		}));
