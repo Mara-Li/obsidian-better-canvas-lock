@@ -1,7 +1,7 @@
 {
 	"id": "better-canvas-lock",
 	"name": "Better Canvas Lock",
-	"description": "Lock the camera view in canvas ",
+	"description": "Enhance the read-only mode in canvas with fully lock the scroll, zoom, drag-and-drop in read-only!",
 	"author": "Mara-Li",
 	"authorUrl": "https://www.github.com/lisandra-dev",
 	"fundingUrl": "https://ko-fi.com/lisandra_dev",
