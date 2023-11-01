@@ -19,14 +19,10 @@ export default class BetterLock extends Plugin {
 			callFunction = callFunction ? callFunction : "main";
 			callFunction = callFunction.contains("eval") ? "main" : callFunction;
 			if (error) {
-				if (!Platform.isDesktop)
-					console.error(`[${this.manifestName()}] [${callFunction}]`, ...message);
-				else
-					console.log(`[${this.manifestName()}] [${callFunction}]`, ...message);
+				console.error(`[${this.manifestName()}] [${callFunction}]`, ...message);
 			} else {
 				console.log(`[${this.manifestName()}] [${callFunction}]`, ...message);
 			}
-			return;
 		}
 		return;
 	}
@@ -47,7 +43,7 @@ export default class BetterLock extends Plugin {
 			buttonRotate.ariaDisabled = "true";
 			buttonRotate.classList.add("is-disabled");
 		}
-		
+
 		return;
 	}
 
@@ -166,7 +162,7 @@ export default class BetterLock extends Plugin {
 					};
 				}
 			});
-			
+
 		} catch (e) {
 			this.logs(true, e);
 		}
@@ -189,7 +185,7 @@ export default class BetterLock extends Plugin {
 
 		await this.loadSettings();
 		this.addSettingTab(new BetterLockSettingsTab(this.app, this));
-		
+
 		this.registerEvent(this.app.workspace.on("active-leaf-change", async (leaf) => {
 			if (!leaf) {
 				this.logs(undefined, "No file opened, skipping");
@@ -217,7 +213,7 @@ export default class BetterLock extends Plugin {
 			}
 		}));
 	}
-	
+
 
 	onunload() {
 		console.log(
@@ -244,6 +240,6 @@ export default class BetterLock extends Plugin {
 	manifestName() {
 		return this.manifest.name.replaceAll(/\s+/g, "");
 	}
-	
+
 }
 
