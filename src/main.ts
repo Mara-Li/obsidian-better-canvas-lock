@@ -1,4 +1,4 @@
-import { Platform, Plugin, WorkspaceLeaf } from "obsidian";
+import { Plugin, WorkspaceLeaf } from "obsidian";
 import { around } from "monkey-around";
 import { BetterLockSettings, DEFAULT_SETTINGS } from "./interface";
 import { BetterLockSettingsTab } from "./settings";
