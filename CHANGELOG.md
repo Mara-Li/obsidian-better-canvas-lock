@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.0.14](https://github.com/Lisandra-dev/obsidian-better-canvas-lock/compare/0.0.13...0.0.14) (2024-05-26)
+
 ## [0.0.13](https://github.com/Lisandra-dev/obsidian-canvas-lock-camera/compare/0.0.12...0.0.13) (2023-09-08)
 
 
