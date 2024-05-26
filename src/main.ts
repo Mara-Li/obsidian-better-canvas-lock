@@ -5,16 +5,18 @@ import { BetterLockSettingsTab } from "./settings";
 import i18next from "i18next";
 import { resources, translationLanguage } from "./i18n/i18next";
 
-
 export default class BetterLock extends Plugin {
 	//eslint-disable-next-line @typescript-eslint/no-explicit-any
 	activeMonkeys: Record<string, any> = {};
-	settings: BetterLockSettings;
+	settings!: BetterLockSettings;
 
 	logs(error: undefined | boolean, ...message: unknown[]) {
 		if (this.settings.logs) {
 			let callFunction = new Error().stack?.split("\n")[2].trim();
-			callFunction = callFunction?.substring(callFunction.indexOf("at ") + 3, callFunction.lastIndexOf(" ("));
+			callFunction = callFunction?.substring(
+				callFunction.indexOf("at ") + 3,
+				callFunction.lastIndexOf(" (")
+			);
 			callFunction = callFunction?.replace("Object.callback", "");
 			callFunction = callFunction ? callFunction : "main";
 			callFunction = callFunction.contains("eval") ? "main" : callFunction;
@@ -28,9 +30,15 @@ export default class BetterLock extends Plugin {
 	}
 
 	disableButton(leaf: WorkspaceLeaf) {
-		const buttonPlus = leaf.view.containerEl.querySelector(".canvas-control-item:has(.lucide-plus)");
-		const buttonMinus = leaf.view.containerEl.querySelector(".canvas-control-item:has(.lucide-minus)");
-		const buttonRotate = leaf.view.containerEl.querySelector(".canvas-control-item:has(.lucide-rotate-cw)");
+		const buttonPlus = leaf.view.containerEl.querySelector(
+			".canvas-control-item:has(.lucide-plus)"
+		);
+		const buttonMinus = leaf.view.containerEl.querySelector(
+			".canvas-control-item:has(.lucide-minus)"
+		);
+		const buttonRotate = leaf.view.containerEl.querySelector(
+			".canvas-control-item:has(.lucide-rotate-cw)"
+		);
 		if (buttonPlus) {
 			buttonPlus.ariaDisabled = "true";
 			buttonPlus.classList.add("is-disabled");
@@ -48,9 +56,15 @@ export default class BetterLock extends Plugin {
 	}
 
 	enableButton(leaf: WorkspaceLeaf) {
-		const buttonPlus = leaf.view.containerEl.querySelector(".canvas-control-item:has(.lucide-plus)");
-		const buttonMinus = leaf.view.containerEl.querySelector(".canvas-control-item:has(.lucide-minus)");
-		const buttonRotate = leaf.view.containerEl.querySelector(".canvas-control-item:has(.lucide-rotate-cw)");
+		const buttonPlus = leaf.view.containerEl.querySelector(
+			".canvas-control-item:has(.lucide-plus)"
+		);
+		const buttonMinus = leaf.view.containerEl.querySelector(
+			".canvas-control-item:has(.lucide-minus)"
+		);
+		const buttonRotate = leaf.view.containerEl.querySelector(
+			".canvas-control-item:has(.lucide-rotate-cw)"
+		);
 		if (buttonPlus) {
 			buttonPlus.ariaDisabled = "false";
 			buttonPlus.classList.remove("is-disabled");
@@ -69,7 +83,9 @@ export default class BetterLock extends Plugin {
 	disableFunction(leaf: WorkspaceLeaf) {
 		//@ts-ignore
 		const canvas = leaf.view.canvas;
-		const reset = () => {return;};
+		const reset = () => {
+			return;
+		};
 		if (this.settings.select) {
 			canvas.handleSelectionDrag = reset;
 			canvas.handleDragToSelect = reset;
@@ -84,12 +100,11 @@ export default class BetterLock extends Plugin {
 			canvas.createFileNodes = reset;
 			canvas.dragTempNode = reset;
 			canvas.cardMenuEl.addClass("is-disabled");
-
 		}
-		if (this.settings.scroll){
+		if (this.settings.scroll) {
 			this.logs(undefined, canvas);
 			const isFocused = canvas.wrapperEl?.querySelector(".canvas-node.is-focused");
-			canvas.onTouchdown = isFocused ? Object.getPrototypeOf(canvas).onTouchdown : reset ;
+			canvas.onTouchdown = isFocused ? Object.getPrototypeOf(canvas).onTouchdown : reset;
 			canvas.isDragging = isFocused ? false : true;
 			this.logs(undefined, canvas.isDragging);
 		}
@@ -128,7 +143,11 @@ export default class BetterLock extends Plugin {
 			if (canvas.readonly) {
 				this.logs(undefined, "Readonly click");
 				const isFocused = canvas.wrapperEl?.querySelector(".canvas-node.is-focused");
-				canvas.onTouchdown = isFocused ? Object.getPrototypeOf(canvas).onTouchdown : () => {return;};
+				canvas.onTouchdown = isFocused
+					? Object.getPrototypeOf(canvas).onTouchdown
+					: () => {
+							return;
+						};
 				canvas.isDragging = isFocused ? false : true;
 			} else {
 				//restore
@@ -145,6 +164,7 @@ export default class BetterLock extends Plugin {
 		this.onClickEvent(leaf);
 		try {
 			return around(canvas, {
+				//@ts-ignore
 				setReadonly: (oldMethod) => {
 					return (readOnly: boolean) => {
 						try {
@@ -160,20 +180,15 @@ export default class BetterLock extends Plugin {
 							this.logs(true, e);
 						}
 					};
-				}
+				},
 			});
-
 		} catch (e) {
 			this.logs(true, e);
 		}
 	}
 
-
-
 	async onload() {
-		console.log(
-			`${this.manifestName()} v.${this.manifest.version} loaded.`
-		);
+		console.log(`${this.manifestName()} v.${this.manifest.version} loaded.`);
 
 		i18next.init({
 			lng: translationLanguage,
@@ -182,43 +197,41 @@ export default class BetterLock extends Plugin {
 			returnNull: false,
 		});
 
-
 		await this.loadSettings();
 		this.addSettingTab(new BetterLockSettingsTab(this.app, this));
 
-		this.registerEvent(this.app.workspace.on("active-leaf-change", async (leaf) => {
-			if (!leaf) {
-				this.logs(undefined, "No file opened, skipping");
-				for (const monkey of Object.values(this.activeMonkeys)) {
-					monkey();
+		this.registerEvent(
+			this.app.workspace.on("active-leaf-change", async (leaf) => {
+				if (!leaf) {
+					this.logs(undefined, "No file opened, skipping");
+					for (const monkey of Object.values(this.activeMonkeys)) {
+						monkey();
+					}
+					this.activeMonkeys = {};
+					return;
 				}
-				this.activeMonkeys = {};
-				return;
-			}
-			const typeLeaf = leaf.view.getViewType();
-			if (typeLeaf !== "canvas") {
-				this.logs(undefined, "Not a canvas, skipping");
-				return;
-			}
-			//get active leaf
-			//@ts-ignore
-			const id = leaf.id;
-			//@ts-ignore
-			const canvas = leaf.view.canvas;
-			this.activeMonkeys[id] = this.betterLock(leaf);
-			if (canvas.readonly) {
-				this.logs(undefined, "Camera locked");
-				this.onClickEvent(leaf);
-				this.disableFunction(leaf);
-			}
-		}));
+				const typeLeaf = leaf.view.getViewType();
+				if (typeLeaf !== "canvas") {
+					this.logs(undefined, "Not a canvas, skipping");
+					return;
+				}
+				//get active leaf
+				//@ts-ignore
+				const id = leaf.id;
+				//@ts-ignore
+				const canvas = leaf.view.canvas;
+				this.activeMonkeys[id] = this.betterLock(leaf);
+				if (canvas.readonly) {
+					this.logs(undefined, "Camera locked");
+					this.onClickEvent(leaf);
+					this.disableFunction(leaf);
+				}
+			})
+		);
 	}
 
-
 	onunload() {
-		console.log(
-			`${this.manifestName()} v.${this.manifest.version} unloaded.`
-		);
+		console.log(`${this.manifestName()} v.${this.manifest.version} unloaded.`);
 		for (const monkey of Object.values(this.activeMonkeys)) {
 			monkey();
 		}
@@ -240,6 +253,4 @@ export default class BetterLock extends Plugin {
 	manifestName() {
 		return this.manifest.name.replaceAll(/\s+/g, "");
 	}
-
 }
-
