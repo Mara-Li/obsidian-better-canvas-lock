@@ -1,5 +1,5 @@
-import { PluginSettingTab, App, Setting } from "obsidian";
-import BetterLock from "./main";
+import { PluginSettingTab, type App, Setting } from "obsidian";
+import type BetterLock from "./main";
 import i18next from "i18next";
 export class BetterLockSettingsTab extends PluginSettingTab {
 	plugin: BetterLock;

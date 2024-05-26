@@ -1,6 +1,6 @@
-import { Plugin, WorkspaceLeaf } from "obsidian";
+import { Plugin, type WorkspaceLeaf } from "obsidian";
 import { around } from "monkey-around";
-import { BetterLockSettings, DEFAULT_SETTINGS } from "./interface";
+import { type BetterLockSettings, DEFAULT_SETTINGS } from "./interface";
 import { BetterLockSettingsTab } from "./settings";
 import i18next from "i18next";
 import { resources, translationLanguage } from "./i18n/i18next";
@@ -146,10 +146,10 @@ export default class BetterLock extends Plugin {
 		try {
 			return around(canvas, {
 				setReadonly: (oldMethod) => {
-					return (read_only: boolean) => {
+					return (readOnly: boolean) => {
 						try {
-							oldMethod?.apply(canvas, [read_only]);
-							if (read_only) {
+							oldMethod?.apply(canvas, [readOnly]);
+							if (readOnly) {
 								this.logs(undefined, "Camera locked");
 								this.disableFunction(leaf);
 							} else {
